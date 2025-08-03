@@ -88,7 +88,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+        <div className="main-component border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <p>&copy; 2024 {process.env.NEXT_PUBLIC_NAME} Restaurant. All rights reserved.</p>
         </div>
       </div>

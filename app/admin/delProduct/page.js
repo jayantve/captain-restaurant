@@ -2,7 +2,7 @@
 import React, { useState } from "react"
 import deleteFirestoreDocument from '@/database/DeleteProduct'
 
-export default function delProducts() {
+export default function DelProducts() { // <-- The change is here
     const [id, setId] = useState('')
 
     const handleSubmit = async (e) => {

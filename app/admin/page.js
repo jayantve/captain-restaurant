@@ -1,72 +1,76 @@
-import React from 'react'
+import React from 'react';
 import { db } from "@/firebase/config";
 import { collection, getDocs } from "firebase/firestore";
 
-const Dashboard = async () => {
+/**
+ * A server-side component that fetches all product data from Firestore,
+ * calculates key metrics, and renders a responsive dashboard of cards.
+ */
+export default async function Dashboard() {
 
+    // Fetch all documents from the "products" collection on the server.
     const querySnapshot = await getDocs(collection(db, "products"));
 
-    // Use .map() to create an array of data objects, including the document ID
-    const Data = querySnapshot.docs.map((doc) => ({
+    // Map the query snapshot documents to an array of product data objects.
+    const productsData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
     }));
 
-    // Calculate product price metrics
-    const prices = Data.map(p => Number(p.price)).filter(price => !isNaN(price));
+    // --- Data Processing and Metric Calculation ---
+
+    // Extract prices, ensuring they are valid numbers.
+    const prices = productsData.map(p => Number(p.price)).filter(price => !isNaN(price));
+
     const highestPrice = prices.length > 0 ? Math.max(...prices) : 0;
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const totalPrices = prices.reduce((sum, price) => sum + price, 0);
     const averagePrice = prices.length > 0 ? (totalPrices / prices.length).toFixed(2) : 0;
 
-    // Calculate product counts by category
-    const mainCourseCount = Data.filter(p => p.category === 'Main Course').length;
-    function CategoryLengthCount({category}) {
-        return Data.filter(p => p.category === category).length;
-    }
-    const vegCount = Data.filter(p => p.category === 'Veg').length;
-    const indianCount = Data.filter(p => p.category === 'Indian').length;
-    const nonVegCount = Data.filter(p => p.category === 'Non-Veg').length;
+    // A more robust way to count products by category, handling arrays.
+    const countByCategory = (categoryName) => {
+        return productsData.filter(p => p.category && p.category.includes(categoryName)).length;
+    };
+
+    // Define the metrics to display in a structured array.
+    const metrics = [
+        { title: 'Total Products', value: `${productsData.length} Products`, color: 'blue' },
+        { title: 'Highest Price', value: `₹ ${highestPrice}`, color: 'green' },
+        { title: 'Lowest Price', value: `₹ ${lowestPrice}`, color: 'red' },
+        { title: 'Average Price', value: `₹ ${averagePrice}`, color: 'yellow' },
+        { title: 'Main Course', value: `${countByCategory('Main Course')} Products`, color: 'purple' },
+        { title: 'Vegetarian', value: `${countByCategory('Veg')} Products`, color: 'teal' },
+        { title: 'Indian', value: `${countByCategory('Indian')} Products`, color: 'orange' },
+        { title: 'Non-Vegetarian', value: `${countByCategory('Non-Veg')} Products`, color: 'indigo' },
+    ];
+
+    // Tailwind CSS color map for dynamic styling.
+    const colorMap = {
+        blue: 'bg-blue-500',
+        green: 'bg-green-500',
+        red: 'bg-red-500',
+        yellow: 'bg-yellow-500',
+        purple: 'bg-purple-500',
+        teal: 'bg-teal-500',
+        orange: 'bg-orange-500',
+        indigo: 'bg-indigo-500',
+    };
 
     return (
-        <div className='md:p-10 p-1'>
-            <div className='flex flex-wrap gap-5 justify-center'>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Total Product</h1>
-                    <p className='text-md font-sans font-semibold p-2'>{Data.length} Products</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Highest Price</h1>
-                    <p className='text-md font-sans font-semibold p-2'>₹ {highestPrice}</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Lowest Price</h1>
-                    <p className='text-md font-sans font-semibold p-2'>₹ {lowestPrice}</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Average Price</h1>
-                    <p className='text-md font-sans font-semibold p-2'>₹ {averagePrice}</p>
-                </div>
-                {/* New category count cards */}
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Main Course</h1>
-                    <p className='text-md font-sans font-semibold p-2'>{CategoryLengthCount('Main Course')} Products</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Vegetarian</h1>
-                    <p className='text-md font-sans font-semibold p-2'>{CategoryLengthCount('Veg')} Products</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Indian</h1>
-                    <p className='text-md font-sans font-semibold p-2'>{CategoryLengthCount('Indian')} Products</p>
-                </div>
-                <div className='md:p-5 p-2 md:m-5 m-1 md:shadow-2xl shadow-lg inline-block rounded-2xl text-center'>
-                    <h1 className='text-xl font-serif font-extrabold p-2'>Non-Vegetarian</h1>
-                    <p className='text-md font-sans font-semibold p-2'>{CategoryLengthCount('Non-Veg')} Products</p>
-                </div>
+        <div className='min-h-screen p-4 sm:p-8 md:p-12 bg-gray-100'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-10'>Product Dashboard</h1>
+            
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+                {metrics.map((metric, index) => (
+                    <div 
+                        key={index} 
+                        className={`p-6 rounded-2xl shadow-lg text-white text-center transition-transform transform hover:scale-105 ${colorMap[metric.color]}`}
+                    >
+                        <h2 className='text-lg font-semibold mb-2'>{metric.title}</h2>
+                        <p className='text-4xl font-extrabold'>{metric.value}</p>
+                    </div>
+                ))}
             </div>
         </div>
-    )
+    );
 }
-
-export default Dashboard

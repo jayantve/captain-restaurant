@@ -10,7 +10,7 @@ import { db } from '@/firebase/config';
  * @returns {Promise<{ id: string, data: object } | null>} The document ID and data, or null if no document is found.
  */
 
-export default async function getSingleDocumentByQuery(docid) {
+export default async function getSingleDocumentByQuery(x, y, docid) {
     console.log(docid)
     if (!docid) { return 'null'; }
 
@@ -18,7 +18,7 @@ export default async function getSingleDocumentByQuery(docid) {
         
         const collectionRef = await collection(db, 'products');
 
-        const q = await query(collectionRef, where("id", '==', docid));
+        const q = await query(collectionRef, where(x, y, docid));
         
         const querySnapshot = await getDocs(q);
 

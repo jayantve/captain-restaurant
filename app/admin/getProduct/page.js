@@ -13,8 +13,8 @@ export default async function getProducts() {
     }));
 
     return (
-        <div className='mx-auto max-w-screen overflow-x-scroll '>
-            <div className="relative overflow-x-auto">
+        <div className='w-screen '>
+            <div className="relative overflow-x-scroll ">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>

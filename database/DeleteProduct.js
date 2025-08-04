@@ -14,7 +14,7 @@ export default async function deleteFirestoreDocument(docId) {
     let docid = docId  
     try {
         
-        const id = await getSingleDocumentByQuery(docid)
+        const id = await getSingleDocumentByQuery('id' ,'==' ,docid)
 
         if (id) {
 

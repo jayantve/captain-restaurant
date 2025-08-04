@@ -11,8 +11,6 @@ import {UserButton } from '@clerk/nextjs'
 export default function AdminNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  
-
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };

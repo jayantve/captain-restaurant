@@ -64,7 +64,7 @@ export default async function MenuItemDetail({ params }) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div className="h-96 lg:h-[500px] bg-cover bg-center rounded-lg shadow-lg" style={{
-                            backgroundImage: `url('${item.image}')`
+                            backgroundImage: `url('${item.imageUrl}')`
                         }}></div>
 
                         <div>

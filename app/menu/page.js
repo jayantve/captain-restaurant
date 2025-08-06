@@ -116,7 +116,7 @@ export default function Menu() {
                                 currentItems.map((item) => (
                                     <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                                         <div className="h-48 bg-cover bg-center" style={{
-                                            backgroundImage: `url('${item.image}')`
+                                            backgroundImage: `url('${item.imageUrl}')`
                                         }}></div>
                                         <div className="p-6">
                                             <div className="flex justify-between items-start mb-2">

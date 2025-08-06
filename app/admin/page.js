@@ -1,26 +1,49 @@
-import React from 'react';
+'use client'
+import React, { useState, useMemo, useEffect } from 'react';
 import { db } from "@/firebase/config";
 import { collection, getDocs } from "firebase/firestore";
+
+/**
+ * A server-side component that fetches all products from Firestore
+ * and renders them in a responsive table.
+ *
+ * This component is an `async` function, which allows it to directly
+ * make asynchronous calls like fetching data from a database.
+ */
+
+const DataReturner = async () => {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    }));
+    return data;
+};
+
 
 /**
  * A server-side component that fetches all product data from Firestore,
  * calculates key metrics, and renders a responsive dashboard of cards.
  */
-export default async function Dashboard() {
+export default function Dashboard() {
 
     // Fetch all documents from the "products" collection on the server.
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const [data, setData] = useState([]);
+        const [loading, setLoading] = useState(true);
+    
+        useEffect(() => {
+                const fetchData = async () => {
+                    setLoading(true);
+                    const products = await DataReturner();
+                    setData(products);
+                    setLoading(false);
+                };
+                fetchData();
+            }, []);
 
-    // Map the query snapshot documents to an array of product data objects.
-    const productsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-    }));
-
-    // --- Data Processing and Metric Calculation ---
 
     // Extract prices, ensuring they are valid numbers.
-    const prices = productsData.map(p => Number(p.price)).filter(price => !isNaN(price));
+    const prices = data.map(p => Number(p.price)).filter(price => !isNaN(price));
 
     const highestPrice = prices.length > 0 ? Math.max(...prices) : 0;
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -29,12 +52,12 @@ export default async function Dashboard() {
 
     // A more robust way to count products by category, handling arrays.
     const countByCategory = (categoryName) => {
-        return productsData.filter(p => p.category && p.category.includes(categoryName)).length;
+        return data.filter(p => p.category && p.category.includes(categoryName)).length;
     };
 
     // Define the metrics to display in a structured array.
     const metrics = [
-        { title: 'Total Products', value: `${productsData.length} Products`, color: 'blue' },
+        { title: 'Total Products', value: `${data.length} Products`, color: 'blue' },
         { title: 'Highest Price', value: `₹ ${highestPrice}`, color: 'green' },
         { title: 'Lowest Price', value: `₹ ${lowestPrice}`, color: 'red' },
         { title: 'Average Price', value: `₹ ${averagePrice}`, color: 'yellow' },

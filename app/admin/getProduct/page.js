@@ -1,4 +1,5 @@
-import React from 'react';
+'use client'
+import React, { useState, useMemo, useEffect } from 'react';
 import { db } from "@/firebase/config";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -9,17 +10,30 @@ import { collection, getDocs } from "firebase/firestore";
  * This component is an `async` function, which allows it to directly
  * make asynchronous calls like fetching data from a database.
  */
-export default async function ProductsPage() {
 
-    // Fetch all documents from the "products" collection.
+const DataReturner = async () => {
     const querySnapshot = await getDocs(collection(db, "products"));
-
-    // Map the query snapshot documents to a clean array of data objects.
-    // Each object includes the document's auto-generated ID and its data.
-    const productsData = querySnapshot.docs.map((doc) => ({
+    const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
     }));
+    return data;
+};
+
+export default function ProductsPage() {
+
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+            const fetchData = async () => {
+                setLoading(true);
+                const products = await DataReturner();
+                setData(products);
+                setLoading(false);
+            };
+            fetchData();
+        }, []);
 
     return (
         <div className='p-4 md:p-8 lg:p-12 min-h-screen bg-white '>
@@ -36,7 +50,7 @@ export default async function ProductsPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {productsData.map(item => (
+                        {data.map(item => (
                             <tr key={item.id} className="bg-white border-b hover:bg-gray-50">
                                 <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap min-w-[150px]">
                                     {item.id}

@@ -15,6 +15,7 @@ export default function AddProductsForm() {
     const [desc, setDesc] = useState('');
     const [price, setPrice] = useState('');
     const [category, setCategory] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
 
     // State for managing UI feedback and loading state
     const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ export default function AddProductsForm() {
 
         try {
             // Attempt to add the new product data
-            await writeProductData(id, name, desc, price, categoriesArray);
+            await writeProductData(id, name, desc, price, categoriesArray , imageUrl);
 
             // Set success message and clear form fields
             setMessage(`Product "${name}" successfully added!`);
@@ -48,6 +49,8 @@ export default function AddProductsForm() {
             setDesc('');
             setPrice('');
             setCategory('');
+            setImageUrl('');
+
         } catch (error) {
             // Set error message if the submission fails
             setMessage(`Error: Could not add product. ${error.message}`);
@@ -160,6 +163,25 @@ export default function AddProductsForm() {
                             className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2.5 left-3 z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 bg-gray-50 px-1"
                         >
                             Category (comma separated)
+                        </label>
+                    </div>
+
+                    <div className="relative z-0 w-full group">
+                        <input
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            type="text"
+                            name="product_image"
+                            id="product_image"
+                            className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
+                            placeholder=" "
+                            required
+                        />
+                        <label
+                            htmlFor="product_image"
+                            className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2.5 left-3 z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 bg-gray-50 px-1"
+                        >
+                            Image Url
                         </label>
                     </div>
 
